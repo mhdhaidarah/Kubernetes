@@ -1,12 +1,12 @@
-#All Nodes
+######All Nodes
 apt update && apt upgrade -y
 hostnamectl set-hostname (CHANGE HOSTNAME)
 
-#All Nodes
+######All Nodes
 swapoff -a
 sed -i '/ swap / s/^/#/' /etc/fstab
 
-#All Nodes
+######All Nodes
 cat <<EOF | tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
@@ -15,7 +15,7 @@ EOF
 modprobe overlay
 modprobe br_netfilter
 
-#All Nodes
+######All Nodes
 cat <<EOF | tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-iptables  = 1
 net.bridge.bridge-nf-call-ip6tables = 1
@@ -24,10 +24,10 @@ EOF
 
 sysctl --system
 
-#All Nodes
+######All Nodes
 apt install -y containerd
 
-#All Nodes
+######All Nodes
 mkdir -p /etc/containerd
 containerd config default > /etc/containerd/config.toml
 nano /etc/containerd/config.toml
@@ -36,12 +36,12 @@ nano /etc/containerd/config.toml
 SystemdCgroup = true
 
 
-#All Nodes
+######All Nodes
 systemctl restart containerd
 systemctl enable containerd
 
 
-#All Nodes
+######All Nodes
 apt install -y apt-transport-https ca-certificates curl
 
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key \
@@ -56,7 +56,7 @@ apt install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl
 
 
-#Master Only
+#######Master Only
 ctr image pull ghcr.io/kube-vip/kube-vip:v0.7.1
 
 mkdir -p /etc/kubernetes/manifests
@@ -71,7 +71,7 @@ ctr run --rm --net-host ghcr.io/kube-vip/kube-vip:v0.7.1 vip \
 > /etc/kubernetes/manifests/kube-vip.yaml
 
 
-#Master Only
+#########Master Only
 kubeadm init \
 --control-plane-endpoint "192.168.1.100:6443" \
 --upload-certs \
@@ -79,31 +79,31 @@ kubeadm init \
 
 ***Save the join commands shown at the end****
 
-#Master Only
+##########Master Only
 mkdir -p $HOME/.kube
 cp /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 
 
-#All Nodes
+######All Nodes
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 
 
-#All Masters Join
+######All Masters Join
 kubeadm join 192.168.1.100:6443 \
 --token <token> \
 --discovery-token-ca-cert-hash sha256:<hash> \
 --control-plane --certificate-key <cert-key>
 
 
-#All Workers Join
+######All Workers Join
 kubeadm join 192.168.1.100:6443 \
 --token <token> \
 --discovery-token-ca-cert-hash sha256:<hash>
 
 
 
-#Testing
+##########Testing
 kubectl create deployment nginx --image=nginx --replicas=10
 kubectl expose deployment nginx \
 --type=NodePort \
