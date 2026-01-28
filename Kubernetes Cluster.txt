@@ -1,3 +1,8 @@
+This is tested on ubuntu to create Kubernetes Cluster Include any number of Masters and Workers
+This commands must be run at root privilage
+sudo su
+
+
 ######All Nodes
 apt update && apt upgrade -y
 hostnamectl set-hostname (CHANGE HOSTNAME)
@@ -113,6 +118,7 @@ kubectl get svc
 
 kubectl get nodes
 kubectl get pods -o wide
+
 
 
 
