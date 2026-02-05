@@ -79,20 +79,13 @@ ctr run --rm --net-host ghcr.io/kube-vip/kube-vip:v0.7.1 vip \
 ```
 
 ## Master Only
+### *Save the join commands shown at the end of the command
 ```bash
 kubeadm init \
 --control-plane-endpoint "192.168.1.100:6443" \
 --upload-certs \
 --pod-network-cidr=10.244.0.0/16
 ```
-
-## Save the join commands shown at the end of the command 
-
-## Master Only
-mkdir -p $HOME/.kube
-cp /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
-
 ## Example join commands
 ```bash
 ## All Masters Join
@@ -107,6 +100,15 @@ kubeadm join 192.168.1.100:6443 \
 --token <token> \
 --discovery-token-ca-cert-hash sha256:<hash>
 ```
+
+## Master Only
+```bash
+mkdir -p $HOME/.kube
+cp /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+
 
 ## All Nodes
 ```bash
